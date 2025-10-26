@@ -34,7 +34,7 @@ export class UserService {
     }
 
     const entity = this.usersRepository.create(dto);
-    
+
     return this.usersRepository.save(entity);
   }
 
@@ -64,7 +64,7 @@ export class UserService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  async update(id: string, dto: UpdateUserDto): Promise<User> {
+  async update(id: string, dto: Partial<User>): Promise<User> {
     const model = await this.findOne(id);
     Object.assign(model, dto);
     return this.usersRepository.save(model);

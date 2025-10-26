@@ -129,6 +129,18 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  async updateDevice(id: string, dto: any) {
+    const baseUrl = this.getBaseUrl();
+    const url = `${baseUrl}/devices/${id}`;
+    const response = await this.httpService.axiosRef.patch(url, dto);
+
+    if (response.status !== HttpStatus.OK) {
+      throw new Error(response.statusText);
+    }
+
+    return response.data;
+  }
+
   // async getDeviceStatus(id: string) {
   //   const baseUrl = this.getBaseUrl();
   //   const url = `${baseUrl}/devices/${id}/status`;

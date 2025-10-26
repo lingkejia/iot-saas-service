@@ -35,6 +35,9 @@ export class DeviceService {
 
     const items = await this.deviceRepository.find({
       where,
+      order: {
+        createdAt: 'DESC',
+      },
       // skip: (page - 1) * pageSize,
       // take: pageSize,
     });
@@ -48,6 +51,17 @@ export class DeviceService {
     }
 
     const response = await this.iotService.getDevice(deviceId);
+    return response.data;
+  }
+
+  async update(deviceId: string, dto: any, user: any) {
+    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
+      throw new ForbiddenException('您没有权限访问');
+    }
+
+    await this.deviceRepository.update({ deviceId }, dto);
+
+    const response = await this.iotService.updateDevice(deviceId, dto);
     return response.data;
   }
 

@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -34,6 +35,18 @@ export class DeviceController {
   @Roles('admin', 'user')
   findOne(@Param('deviceId') deviceId: string, @Req() req: any) {
     return this.deviceService.findOne(deviceId, req.user);
+  }
+
+  @Patch('/:deviceId')
+  @ApiOperation({ summary: '更新设备' })
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('admin', 'user')
+  update(
+    @Param('deviceId') deviceId: string,
+    @Body() dto: any,
+    @Req() req: any,
+  ) {
+    return this.deviceService.update(deviceId, dto, req.user);
   }
 
   @Get('/:deviceId/tag')
