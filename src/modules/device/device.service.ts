@@ -119,12 +119,16 @@ export class DeviceService {
     return response.data;
   }
 
-  async findConfig(deviceId: string, user: any) {
+  async findConfig(deviceId: string, identifier: string, user: any) {
     if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
       throw new ForbiddenException('您没有权限访问');
     }
 
-    const response = await this.iotService.getDeviceConfig(deviceId);
+    const response = await this.iotService.getDeviceConfig(
+      deviceId,
+      identifier,
+    );
+
     return response.data;
   }
 

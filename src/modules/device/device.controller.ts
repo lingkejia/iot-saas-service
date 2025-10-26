@@ -117,8 +117,12 @@ export class DeviceController {
   @ApiOperation({ summary: '获取设备配置' })
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('admin', 'user')
-  findConfig(@Param('deviceId') deviceId: string, @Req() req: any) {
-    return this.deviceService.findConfig(deviceId, req.user);
+  findConfig(
+    @Param('deviceId') deviceId: string,
+    @Query('identifier') identifier: string,
+    @Req() req: any,
+  ) {
+    return this.deviceService.findConfig(deviceId, identifier, req.user);
   }
 
   @Get('/:deviceId/configs')
