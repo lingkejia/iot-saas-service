@@ -2,8 +2,8 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron } from '@nestjs/schedule';
 import { DeviceService } from '../device/device.service';
-import { IotService } from '../external/iot.service';
 import { Device } from '../device/entities/device.entity';
+import { IotService } from '../external/iot.service';
 
 @Injectable()
 export class JobService implements OnModuleInit {
@@ -22,13 +22,20 @@ export class JobService implements OnModuleInit {
   @Cron('0 * * * * *')
   async syncDevices() {
     try {
+      const locals = await this.deviceService.findAll({}, {});
       const response = await this.iotService.getDevices({});
       const deviceEntities = [];
 
       response.data.forEach(async (device: any) => {
+        const deviceId = device.id;
         const entity = new Device();
+        const local = locals.find((item) => item.deviceId === deviceId);
+        if (local) {
+          entity.id = local.id;
+        }
+
         entity.name = device.name;
-        entity.deviceId = device.id;
+        entity.deviceId = deviceId;
         entity.devId = device.deviceId;
         entity.productId = device.productId;
         entity.firmwareVersion = device.firmwareVersion;
