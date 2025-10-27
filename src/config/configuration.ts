@@ -22,4 +22,7 @@ export default () => ({
     apiKey: process.env.IOT_API_KEY,
     apiSecret: process.env.IOT_API_SECRET,
   },
+  job: {
+    synDevicePageSize: parseInt(process.env.JOB_SYN_DEVICE_PAGE_SIZE, 10),
+  },
 });

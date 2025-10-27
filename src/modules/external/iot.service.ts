@@ -98,12 +98,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
-  async getDevices(query: {
-    name?: string;
-    deviceId?: string;
-    online?: boolean;
-    productId?: string;
-  }) {
+  async getDevices(query: any) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/devices`;
     const response = await this.httpService.axiosRef.get(url, {

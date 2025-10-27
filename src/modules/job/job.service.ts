@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron } from '@nestjs/schedule';
 import { DeviceService } from '../device/device.service';
@@ -7,6 +7,10 @@ import { IotService } from '../external/iot.service';
 
 @Injectable()
 export class JobService implements OnModuleInit {
+  private readonly logger = new Logger(JobService.name);
+
+  private updatedAt: Date = null;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly iotService: IotService,
@@ -23,32 +27,73 @@ export class JobService implements OnModuleInit {
   async syncDevices() {
     try {
       const locals = await this.deviceService.findAll({}, {});
-      const response = await this.iotService.getDevices({});
-      const deviceEntities = [];
 
-      response.data.forEach(async (device: any) => {
-        const deviceId = device.id;
-        const entity = new Device();
-        const local = locals.find((item) => item.deviceId === deviceId);
-        if (local) {
-          entity.id = local.id;
+      let page = 1;
+      const pageSize = this.configService.get<number>('job.synDevicePageSize');
+      let updatedAt = this.updatedAt;
+      let fetch = 0;
+
+      const entities = [];
+
+      while (true) {
+        this.logger.log(
+          `page: ${page}, pageSize: ${pageSize}, updatedAt: ${this.updatedAt}`,
+        );
+        const response = await this.iotService.getDevices({
+          page,
+          pageSize,
+          updatedAt: this.updatedAt,
+        });
+        const { list, total } = response.data;
+        this.logger.log(`list: ${list.length}, total: ${total}`);
+        fetch += list.length;
+
+        list.forEach(async (remote: any) => {
+          const deviceId = remote.id;
+          const entity = new Device();
+          const local = locals.find((item) => item.deviceId === deviceId);
+          if (local) {
+            entity.id = local.id;
+          }
+
+          entity.name = remote.name;
+          entity.deviceId = deviceId;
+          entity.devId = remote.deviceId;
+          entity.productId = remote.productId;
+          entity.firmwareVersion = remote.firmwareVersion;
+          entity.location = remote.location;
+          entity.online = remote.online;
+          entity.lastOnlineAt = remote.lastOnlineAt;
+
+          entities.push(entity);
+
+          if (
+            updatedAt === null ||
+            updatedAt.getTime() < new Date(remote.updatedAt).getTime()
+          ) {
+            updatedAt = new Date(remote.updatedAt);
+          }
+        });
+
+        if (fetch >= total) {
+          // 跳出循环
+          break;
         }
 
-        entity.name = device.name;
-        entity.deviceId = deviceId;
-        entity.devId = device.deviceId;
-        entity.productId = device.productId;
-        entity.firmwareVersion = device.firmwareVersion;
-        entity.location = device.location;
-        entity.online = device.online;
-        entity.lastOnlineAt = device.lastOnlineAt;
+        // 下一页
+        page++;
 
-        deviceEntities.push(entity);
-      });
+        // 等待1秒继续
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
 
-      await this.deviceService.save(deviceEntities);
+      this.logger.log(`entities: ${entities.length}, updatedAt: ${updatedAt}`);
+      if (entities.length > 0) {
+        await this.deviceService.save(entities);
+        this.updatedAt = updatedAt;
+      }
     } catch (error) {
-      console.error('同步设备列表失败:', error.message);
+      this.logger.error(`同步设备列表失败: ${error.message}`);
     }
   }
 }
