@@ -29,7 +29,7 @@ export class JobService implements OnModuleInit {
       const locals = await this.deviceService.findAll({}, {});
 
       let page = 1;
-      const pageSize = this.configService.get<number>('job.synDevicePageSize');
+      const pageSize = this.configService.get<number>('job.syncDevicePageSize');
       let updatedAt = this.updatedAt;
       let fetch = 0;
 

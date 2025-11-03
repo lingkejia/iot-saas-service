@@ -23,6 +23,6 @@ export default () => ({
     apiSecret: process.env.IOT_API_SECRET,
   },
   job: {
-    synDevicePageSize: parseInt(process.env.JOB_SYN_DEVICE_PAGE_SIZE, 10),
+    syncDevicePageSize: parseInt(process.env.JOB_SYNC_DEVICE_PAGE_SIZE, 10),
   },
 });
