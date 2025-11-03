@@ -64,6 +64,7 @@ export class JobService implements OnModuleInit {
           entity.location = remote.location;
           entity.online = remote.online;
           entity.lastOnlineAt = remote.lastOnlineAt;
+          entity.dataUpdatedAt = remote.dataUpdatedAt;
 
           entities.push(entity);
 

@@ -84,6 +84,9 @@ export class Device {
   // @Column({ nullable: true, length: 255 })
   // mqttPassword: string;
 
+  @Column({ nullable: true })
+  dataUpdatedAt: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 
