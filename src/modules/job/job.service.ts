@@ -37,12 +37,12 @@ export class JobService implements OnModuleInit {
 
       while (true) {
         this.logger.log(
-          `page: ${page}, pageSize: ${pageSize}, updatedAt: ${this.updatedAt}`,
+          `page: ${page}, pageSize: ${pageSize}, updatedAt: ${this.updatedAt?.toISOString()}`,
         );
         const response = await this.iotService.getDevices({
           page,
           pageSize,
-          updatedAt: this.updatedAt,
+          updatedAt: this.updatedAt?.toISOString(),
         });
         const { list, total } = response.data;
         this.logger.log(`list: ${list.length}, total: ${total}`);
@@ -87,7 +87,9 @@ export class JobService implements OnModuleInit {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
-      this.logger.log(`entities: ${entities.length}, updatedAt: ${updatedAt}`);
+      this.logger.log(
+        `entities: ${entities.length}, updatedAt: ${updatedAt?.toISOString()}`,
+      );
       if (entities.length > 0) {
         await this.deviceService.save(entities);
         this.updatedAt = updatedAt;
