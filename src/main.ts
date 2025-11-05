@@ -36,8 +36,8 @@ async function bootstrap() {
 
   // 配置Swagger文档
   const config = new DocumentBuilder()
-    .setTitle('IoT平台API')
-    .setDescription('物联网平台API文档')
+    .setTitle('IoT业务平台API')
+    .setDescription('物联网业务平台API文档')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -45,8 +45,8 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   // 从配置服务获取端口
-  const port = configService.get<number>('port');
-  await app.listen(port || 3100);
-  console.log(`应用程序已启动，访问: http://localhost:${port || 3100}`);
+  const port = configService.get<number>('port', 3100);
+  await app.listen(port);
+  console.log(`应用程序已启动，访问: http://localhost:${port}`);
 }
 bootstrap();

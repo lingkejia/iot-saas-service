@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { IotService } from '../external/iot.service';
@@ -46,106 +46,64 @@ export class DeviceService {
   }
 
   async findOne(deviceId: string, user: any) {
-    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
-      throw new ForbiddenException('您没有权限访问');
-    }
-
     const response = await this.iotService.getDevice(deviceId);
     return response.data;
   }
 
   async update(deviceId: string, dto: any, user: any) {
-    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
-      throw new ForbiddenException('您没有权限访问');
-    }
-
     await this.deviceRepository.update({ deviceId }, dto);
-
     const response = await this.iotService.updateDevice(deviceId, dto);
     return response.data;
   }
 
-  async findTag(deviceId: string, user: any) {
-    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
-      throw new ForbiddenException('您没有权限访问');
-    }
+  async deleteAll() {
+    await this.deviceRepository.deleteAll();
+  }
 
+  async findTag(deviceId: string, user: any) {
     const response = await this.iotService.getDeviceTag(deviceId);
     return response.data;
   }
 
   async findProperty(deviceId: string, user: any) {
-    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
-      throw new ForbiddenException('您没有权限访问');
-    }
-
     const response = await this.iotService.getDeviceProperty(deviceId);
     return response.data;
   }
 
   async findProperties(deviceId: string, query: any, user: any) {
-    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
-      throw new ForbiddenException('您没有权限访问');
-    }
-
     const response = await this.iotService.getDeviceProperties(deviceId, query);
     return response.data;
   }
 
   async findEvents(deviceId: string, query: any, user: any) {
-    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
-      throw new ForbiddenException('您没有权限访问');
-    }
-
     const response = await this.iotService.getDeviceEvents(deviceId, query);
     return response.data;
   }
 
   async findCommands(deviceId: string, query: any, user: any) {
-    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
-      throw new ForbiddenException('您没有权限访问');
-    }
-
     const response = await this.iotService.getDeviceCommands(deviceId, query);
     return response.data;
   }
 
   async sendCommand(deviceId: string, dto: any, user: any) {
-    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
-      throw new ForbiddenException('您没有权限访问');
-    }
-
     const response = await this.iotService.sendDeviceCommand(deviceId, dto);
     return response.data;
   }
 
   async findConfig(deviceId: string, identifier: string, user: any) {
-    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
-      throw new ForbiddenException('您没有权限访问');
-    }
-
     const response = await this.iotService.getDeviceConfig(
       deviceId,
       identifier,
     );
-
     return response.data;
   }
 
   async findConfigs(deviceId: string, query: any, user: any) {
-    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
-      throw new ForbiddenException('您没有权限访问');
-    }
-
     const response = await this.iotService.getDeviceConfigs(deviceId, query);
     return response.data;
   }
 
   async sendConfig(deviceId: string, dto: any, user: any) {
-    if (user.deviceIds && !user.deviceIds.includes(deviceId)) {
-      throw new ForbiddenException('您没有权限访问');
-    }
-
     const response = await this.iotService.sendDeviceConfig(deviceId, dto);
     return response.data;
   }

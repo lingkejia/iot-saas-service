@@ -26,33 +26,47 @@ export class JobService implements OnModuleInit {
   @Cron('0 * * * * *')
   async syncDevices() {
     try {
+      const now = new Date();
+      if (now.getHours() === 0 && now.getMinutes() === 0) {
+        // 整点重置
+        this.updatedAt = null;
+      }
+
+      // 获取本地设备列表
       const locals = await this.deviceService.findAll({}, {});
 
-      let page = 1;
       const pageSize = this.configService.get<number>('job.syncDevicePageSize');
-      let updatedAt = this.updatedAt;
+
+      let page = 1;
+      let updatedAt: Date = null;
       let fetch = 0;
 
       const entities = [];
 
       while (true) {
         this.logger.log(
-          `page: ${page}, pageSize: ${pageSize}, updatedAt: ${this.updatedAt?.toISOString()}`,
+          `page: ${page}, pageSize: ${pageSize}, updatedAt: ${this.updatedAt?.toISOString() ?? null}`,
         );
+
+        // 获取远程设备列表
         const response = await this.iotService.getDevices({
           page,
           pageSize,
-          updatedAt: this.updatedAt?.toISOString(),
+          updatedAt: this.updatedAt?.toISOString() ?? null,
         });
+
         const { list, total } = response.data;
+
         this.logger.log(`list: ${list.length}, total: ${total}`);
+
         fetch += list.length;
 
         list.forEach(async (remote: any) => {
           const deviceId = remote.id;
           const entity = new Device();
+
           const local = locals.find((item) => item.deviceId === deviceId);
-          if (local) {
+          if (local && this.updatedAt !== null) {
             entity.id = local.id;
           }
 
@@ -65,6 +79,8 @@ export class JobService implements OnModuleInit {
           entity.online = remote.online;
           entity.lastOnlineAt = remote.lastOnlineAt;
           entity.dataUpdatedAt = remote.dataUpdatedAt;
+          // entity.createdAt = remote.createdAt;
+          // entity.updatedAt = remote.updatedAt;
 
           entities.push(entity);
 
@@ -89,12 +105,18 @@ export class JobService implements OnModuleInit {
       }
 
       this.logger.log(
-        `entities: ${entities.length}, updatedAt: ${updatedAt?.toISOString()}`,
+        `entities: ${entities.length}, updatedAt: ${updatedAt?.toISOString() ?? null}`,
       );
+
+      if (this.updatedAt === null) {
+        await this.deviceService.deleteAll();
+      }
+
       if (entities.length > 0) {
         await this.deviceService.save(entities);
-        this.updatedAt = updatedAt;
       }
+
+      this.updatedAt = updatedAt;
     } catch (error) {
       this.logger.error(`同步设备列表失败: ${error.message}`);
     }
