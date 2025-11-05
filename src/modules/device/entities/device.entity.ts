@@ -87,6 +87,9 @@ export class Device {
   @Column({ nullable: true })
   dataUpdatedAt: Date;
 
+  @Column({ nullable: true })
+  creAt: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 

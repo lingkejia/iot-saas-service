@@ -36,7 +36,7 @@ export class DeviceService {
     const items = await this.deviceRepository.find({
       where,
       order: {
-        createdAt: 'DESC',
+        creAt: 'DESC',
       },
       // skip: (page - 1) * pageSize,
       // take: pageSize,
