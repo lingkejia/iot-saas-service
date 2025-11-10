@@ -75,6 +75,8 @@ export class JobService implements OnModuleInit {
           entity.devId = remote.deviceId;
           entity.productId = remote.productId;
           entity.firmwareVersion = remote.firmwareVersion;
+          entity.longitude = remote.longitude;
+          entity.latitude = remote.latitude;
           entity.location = remote.location;
           entity.online = remote.online;
           entity.lastOnlineAt = remote.lastOnlineAt;

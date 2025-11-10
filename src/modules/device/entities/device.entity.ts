@@ -59,6 +59,12 @@ export class Device {
   // })
   // configs: DeviceConfig[];
 
+  @Column({ type: 'decimal', precision: 12, scale: 8, nullable: true })
+  longitude: number;
+
+  @Column({ type: 'decimal', precision: 12, scale: 8, nullable: true })
+  latitude: number;
+
   @Column({ nullable: true })
   location: string;
 
