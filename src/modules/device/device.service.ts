@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { IotService } from '../external/iot.service';
 import { Device } from './entities/device.entity';
 
@@ -20,8 +20,8 @@ export class DeviceService {
 
   async findAll(query: any, user: any): Promise<Device[]> {
     const where = {
-      name: query.name,
-      devId: query.devId,
+      name: Like(`%${query.name}%`),
+      devId: Like(`%${query.devId}%`),
       online: query.online,
       deviceId: null,
     };
