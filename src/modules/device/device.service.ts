@@ -20,8 +20,8 @@ export class DeviceService {
 
   async findAll(query: any, user: any): Promise<Device[]> {
     const where = {
-      name: Like(`%${query.name}%`),
-      devId: Like(`%${query.devId}%`),
+      name: query.name ? Like(`%${query.name}%`) : null,
+      devId: query.devId ? Like(`%${query.devId}%`) : null,
       online: query.online,
       deviceId: null,
     };
