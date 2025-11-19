@@ -26,8 +26,10 @@ export class DeviceService {
       deviceId: null,
     };
 
-    if (user.deviceIds) {
-      where.deviceId = In(user.deviceIds);
+    if (user.role === 'user') {
+      // 防止用户没有绑定设备时，查询到所有设备
+      const _deviceIds = user.deviceIds ?? [];
+      where.deviceId = In(_deviceIds);
     }
 
     // const page = query.page ?? 1;

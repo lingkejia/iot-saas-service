@@ -29,7 +29,7 @@ export class DeviceIdGuard implements CanActivate {
 
     const deviceIds = request.user.deviceIds ?? [];
 
-    if (deviceIds.length > 0 && !deviceIds.includes(deviceId)) {
+    if (request.user.role === 'user' && !deviceIds.includes(deviceId)) {
       throw new ForbiddenException('您没有权限访问');
     }
 
