@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -45,12 +45,12 @@ export class AuthService {
   }
 
   async changePassword(dto: any, user: any) {
-    const { oldPassword, newPassword } = dto;
+    const { oldPassword, password } = dto;
     const current = await this.userService.findOne(user.id);
     if (!(await current.validatePassword(oldPassword))) {
       throw new BadRequestException('旧密码错误');
     }
 
-    return this.userService.update(user.id, { password: newPassword });
+    return this.userService.update(user.id, { password });
   }
 }

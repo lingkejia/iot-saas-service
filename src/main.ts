@@ -36,8 +36,8 @@ async function bootstrap() {
 
   // 配置Swagger文档
   const config = new DocumentBuilder()
-    .setTitle('IoT业务平台API')
-    .setDescription('物联网业务平台API文档')
+    .setTitle('云成物联IOT平台API')
+    .setDescription('云成物联IOT平台API文档')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

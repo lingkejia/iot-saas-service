@@ -11,12 +11,12 @@ import { User } from './entities/user.entity';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private userRepository: Repository<User>,
   ) {}
 
   async create(dto: Partial<User>): Promise<User> {
     // 检查用户名是否已存在
-    const existUsername = await this.usersRepository.exists({
+    const existUsername = await this.userRepository.exists({
       where: { username: dto.username },
     });
     if (existUsername) {
@@ -24,24 +24,24 @@ export class UserService {
     }
 
     // 检查邮箱是否已存在
-    const existEmail = await this.usersRepository.exists({
+    const existEmail = await this.userRepository.exists({
       where: { email: dto.email },
     });
     if (existEmail) {
       throw new BadRequestException('邮箱已存在');
     }
 
-    const entity = this.usersRepository.create(dto);
+    const entity = this.userRepository.create(dto);
 
-    return this.usersRepository.save(entity);
+    return this.userRepository.save(entity);
   }
 
   async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    return this.userRepository.find();
   }
 
   async findOne(id: string): Promise<User> {
-    const model = await this.usersRepository.findOne({ where: { id } });
+    const model = await this.userRepository.findOne({ where: { id } });
     if (!model) {
       throw new NotFoundException(`用户ID:${id}不存在`);
     }
@@ -50,7 +50,7 @@ export class UserService {
   }
 
   async findByUsername(username: string): Promise<User> {
-    const model = await this.usersRepository.findOne({ where: { username } });
+    const model = await this.userRepository.findOne({ where: { username } });
     if (!model) {
       throw new NotFoundException(`用户名:${username}不存在`);
     }
@@ -59,17 +59,17 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<User> {
-    return this.usersRepository.findOne({ where: { email } });
+    return this.userRepository.findOne({ where: { email } });
   }
 
   async update(id: string, dto: Partial<User>): Promise<User> {
     const model = await this.findOne(id);
     Object.assign(model, dto);
-    return this.usersRepository.save(model);
+    return this.userRepository.save(model);
   }
 
   async remove(id: string): Promise<void> {
     const model = await this.findOne(id);
-    await this.usersRepository.remove(model);
+    await this.userRepository.remove(model);
   }
 }
