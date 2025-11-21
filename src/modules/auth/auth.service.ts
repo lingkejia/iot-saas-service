@@ -1,5 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { WeixinService } from '../external/weixin.service';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 
@@ -8,12 +13,17 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private weixinService: WeixinService,
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
     try {
       const user = await this.userService.findByUsername(username);
-      if (user && (await user.validatePassword(password))) {
+      const validate = await this.userService.validatePassword(
+        password,
+        user.password,
+      );
+      if (validate) {
         const { password, ...result } = user;
         return result;
       }
@@ -31,8 +41,31 @@ export class AuthService {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email,
+        // email: user.email,
         role: user.role,
+      },
+    };
+  }
+
+  async wxLogin(dto: any) {
+    const { code } = dto;
+    const openid = await this.weixinService.getOpenId(code);
+
+    if (!openid) {
+      throw new UnauthorizedException('微信小程序登录失败，无法获取openid');
+    }
+
+    const user = await this.userService.findByOpenId(openid);
+
+    const payload = { username: user.username, sub: user.id, role: user.role };
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        username: user.username,
+        // email: user.email,
+        role: user.role,
+        // wxOpenId: user.wxOpenId,
       },
     };
   }
@@ -47,10 +80,24 @@ export class AuthService {
   async changePassword(dto: any, user: any) {
     const { oldPassword, password } = dto;
     const current = await this.userService.findOne(user.id);
-    if (!(await current.validatePassword(oldPassword))) {
+    const validate = await this.userService.validatePassword(
+      oldPassword,
+      current.password,
+    );
+    if (!validate) {
       throw new BadRequestException('旧密码错误');
     }
 
     return this.userService.update(user.id, { password });
+  }
+
+  async changeWxBind(dto: any, user: any) {
+    const { code } = dto;
+    const openid = await this.weixinService.getOpenId(code);
+    if (!openid) {
+      throw new UnauthorizedException('微信小程序登录失败，无法获取openid');
+    }
+
+    return this.userService.update(user.id, { wxOpenId: openid });
   }
 }

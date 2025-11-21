@@ -25,4 +25,8 @@ export default () => ({
   job: {
     syncDevicePageSize: parseInt(process.env.JOB_SYNC_DEVICE_PAGE_SIZE, 10),
   },
+  weixin: {
+    appid: process.env.WEIXIN_APPID,
+    secret: process.env.WEIXIN_SECRET,
+  },
 });

@@ -24,35 +24,35 @@ export class UserController {
   @Post()
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('admin')
-  create(@Body() dto: Partial<User>): Promise<User> {
+  create(@Body() dto: Partial<User>) {
     return this.userService.create(dto);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('admin')
-  findAll(): Promise<User[]> {
+  findAll() {
     return this.userService.findAll();
   }
 
   @Get('/:id')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('admin')
-  findOne(@Param('id') id: string): Promise<User> {
+  findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }
 
   @Patch('/:id')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('admin')
-  update(@Param('id') id: string, @Body() dto: Partial<User>): Promise<User> {
+  update(@Param('id') id: string, @Body() dto: Partial<User>) {
     return this.userService.update(id, dto);
   }
 
   @Delete('/:id')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('admin')
-  remove(@Param('id') id: string): Promise<void> {
+  remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }
 }

@@ -1,14 +1,12 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  BeforeInsert,
-  BeforeUpdate,
-} from 'typeorm';
 import { Exclude } from 'class-transformer';
-import * as bcrypt from 'bcrypt';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm';
+// import * as bcrypt from 'bcrypt';
 
 @Entity('users')
 export class User {
@@ -44,22 +42,24 @@ export class User {
   @Column({ type: 'simple-array', nullable: true })
   deviceIds: Array<string>;
 
+  @Column({ nullable: true })
+  wxOpenId: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword() {
-    // 只有当密码被修改时才进行哈希
-    if (this.password) {
-      this.password = await bcrypt.hash(this.password, 10);
-    }
-  }
+  // @BeforeInsert()
+  // @BeforeUpdate()
+  // async hashPassword() {
+  //   if (this.password) {
+  //     this.password = await bcrypt.hash(this.password, 10);
+  //   }
+  // }
 
-  async validatePassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.password);
-  }
+  // async validatePassword(password: string): Promise<boolean> {
+  //   return bcrypt.compare(password, this.password);
+  // }
 }
