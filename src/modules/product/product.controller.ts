@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -55,7 +55,10 @@ export class ProductController {
   @ApiOperation({ summary: '获取产品配置列表' })
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('admin', 'user')
-  findConfigs(@Param('productId') productId: string) {
-    return this.productService.findConfigs(productId);
+  findConfigs(
+    @Param('productId') productId: string,
+    @Query('identifier') identifier: string,
+  ) {
+    return this.productService.findConfigs(productId, identifier);
   }
 }

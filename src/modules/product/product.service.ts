@@ -30,8 +30,11 @@ export class ProductService {
     return response.data;
   }
 
-  async findConfigs(productId: string) {
-    const response = await this.iotService.getProductConfig(productId);
+  async findConfigs(productId: string, identifier: string) {
+    const response = await this.iotService.getProductConfig(
+      productId,
+      identifier,
+    );
     return response.data;
   }
 }

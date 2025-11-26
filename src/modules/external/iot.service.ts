@@ -86,10 +86,14 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
-  async getProductConfig(id: string) {
+  async getProductConfig(id: string, identifier: string) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/products/${id}/configs`;
-    const response = await this.httpService.axiosRef.get(url);
+    const response = await this.httpService.axiosRef.get(url, {
+      params: {
+        identifier,
+      },
+    });
 
     if (response.status !== HttpStatus.OK) {
       throw new Error(response.statusText);
