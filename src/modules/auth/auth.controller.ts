@@ -10,15 +10,28 @@ import {
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { Oplogs, OplogType } from '../oplogs/decorators/oplog.decorator';
 
 @Controller('/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/login')
+  // @Post('/login')
+  // @UseGuards(LocalAuthGuard)
+  // async login(@Req() req: any) {
+  //   return this.authService.login(req.user);
+  // }
+
   @UseGuards(LocalAuthGuard)
+  @Oplogs({ title: '登录', type: OplogType.Login })
+  @Post('/login')
   async login(@Req() req: any) {
-    return this.authService.login(req.user);
+    const result = await this.authService.login(req.user);
+
+    // 为了登录日志
+    req['access_token'] = result.access_token;
+
+    return result;
   }
 
   @Post('/wx-login')

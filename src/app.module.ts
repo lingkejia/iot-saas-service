@@ -13,6 +13,12 @@ import { ExternalModule } from './modules/external/external.module';
 import { JobModule } from './modules/job/job.module';
 import { ProductModule } from './modules/product/product.module';
 import { UserModule } from './modules/user/user.module';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { OplogInterceptor } from './modules/oplogs/interceptors/oplog.interceptor';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import { OplogModule } from './modules/oplogs/oplog.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -38,6 +44,15 @@ import { UserModule } from './modules/user/user.module';
       }),
       inject: [ConfigService],
     }),
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') },
+      }),
+    }),
     // ServeStaticModule.forRoot({
     //   rootPath: join(process.cwd(), 'uploads'),
     //   serveRoot: '/uploads',
@@ -49,8 +64,27 @@ import { UserModule } from './modules/user/user.module';
     DeviceModule,
     ProductModule,
     JobModule,
+    OplogModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: OplogInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: HttpExceptionFilter,
+    // },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule {}

@@ -3,11 +3,11 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
-import {
-  HttpExceptionFilter,
-  AllExceptionsFilter,
-} from './common/filters/http-exception.filter';
+// import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+// import {
+//   HttpExceptionFilter,
+//   AllExceptionsFilter,
+// } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -29,10 +29,10 @@ async function bootstrap() {
   app.enableCors();
 
   // 配置全局拦截器
-  app.useGlobalInterceptors(new ResponseInterceptor());
+  // app.useGlobalInterceptors(new ResponseInterceptor());
 
   // 配置全局过滤器
-  app.useGlobalFilters(new AllExceptionsFilter(), new HttpExceptionFilter());
+  // app.useGlobalFilters(new AllExceptionsFilter(), new HttpExceptionFilter());
 
   // 配置Swagger文档
   const config = new DocumentBuilder()
