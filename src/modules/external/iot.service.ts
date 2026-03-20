@@ -225,7 +225,8 @@ export class IotService implements OnModuleInit {
       deviceId?: string;
       beginTime?: string;
       endTime?: string;
-      limit?: number;
+      page?: number;
+      pageSize?: number;
     },
   ) {
     const baseUrl = this.getBaseUrl();
@@ -273,7 +274,8 @@ export class IotService implements OnModuleInit {
       deviceId?: string;
       beginTime?: string;
       endTime?: string;
-      limit?: number;
+      page?: number;
+      pageSize?: number;
     },
   ) {
     const baseUrl = this.getBaseUrl();
