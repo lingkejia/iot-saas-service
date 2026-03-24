@@ -15,7 +15,7 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(dto: Partial<User>): Promise<User> {
+  async create(dto: Partial<User>) {
     // 检查用户名是否已存在
     const existUsername = await this.userRepository.exists({
       where: { username: dto.username },
@@ -43,11 +43,16 @@ export class UserService {
     return this.userRepository.save(entity);
   }
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  async findAll() {
+    // 固定排序
+    return this.userRepository.find({
+      order: {
+        createdAt: 'ASC',
+      },
+    });
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOne(id: string) {
     const model = await this.userRepository.findOne({ where: { id } });
     if (!model) {
       throw new NotFoundException(`用户ID[${id}]不存在`);
@@ -56,7 +61,7 @@ export class UserService {
     return model;
   }
 
-  async findByUsername(username: string): Promise<User> {
+  async findByUsername(username: string) {
     const model = await this.userRepository.findOne({ where: { username } });
     if (!model) {
       throw new NotFoundException(`用户名[${username}]不存在`);
@@ -65,11 +70,11 @@ export class UserService {
     return model;
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string) {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async findByOpenId(wxOpenId: string): Promise<User> {
+  async findByOpenId(wxOpenId: string) {
     const model = await this.userRepository.findOne({
       where: { wxOpenId },
     });
