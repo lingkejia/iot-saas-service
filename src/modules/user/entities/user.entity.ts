@@ -4,7 +4,7 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 // import * as bcrypt from 'bcrypt';
 
@@ -62,4 +62,7 @@ export class User {
   // async validatePassword(password: string): Promise<boolean> {
   //   return bcrypt.compare(password, this.password);
   // }
+
+  @Column({ length: 50, nullable: true })
+  companyName: string;
 }
