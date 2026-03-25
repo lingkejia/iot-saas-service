@@ -7,20 +7,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { Oplogs, OplogType } from '../oplogs/decorators/oplog.decorator';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { Oplogs, OplogType } from '../oplogs/decorators/oplog.decorator';
 
 @Controller('/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
-  // @Post('/login')
-  // @UseGuards(LocalAuthGuard)
-  // async login(@Req() req: any) {
-  //   return this.authService.login(req.user);
-  // }
 
   @UseGuards(LocalAuthGuard)
   @Oplogs({ title: '登录', type: OplogType.Login })
@@ -34,9 +28,15 @@ export class AuthController {
     return result;
   }
 
+  @Oplogs({ title: '微信小程序登录', type: OplogType.Login })
   @Post('/wx-login')
-  async wxLogin(@Body() dto: any) {
-    return await this.authService.wxLogin(dto);
+  async wxLogin(@Body() dto: any, @Req() req: any) {
+    const result = await this.authService.wxLogin(dto);
+
+    // 为了登录日志
+    req['access_token'] = result.access_token;
+
+    return result;
   }
 
   // @Post('register')
@@ -50,12 +50,14 @@ export class AuthController {
     return req.user;
   }
 
+  @Oplogs({ title: '修改密码', type: OplogType.Update })
   @Patch('/change-password')
   @UseGuards(JwtAuthGuard)
   async changePassword(@Body() dto: any, @Req() req: any) {
     return this.authService.changePassword(dto, req.user);
   }
 
+  @Oplogs({ title: '微信小程序绑定', type: OplogType.Update })
   @Patch('/change-wxbind')
   @UseGuards(JwtAuthGuard)
   async changeWxBind(@Body() dto: any, @Req() req: any) {

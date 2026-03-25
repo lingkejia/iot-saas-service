@@ -70,18 +70,20 @@ export class JobService implements OnModuleInit {
             entity.id = local.id;
           }
 
-          entity.name = remote.name;
-          entity.deviceId = deviceId;
-          entity.devId = remote.deviceId;
-          entity.productId = remote.productId;
-          entity.firmwareVersion = remote.firmwareVersion;
-          entity.longitude = remote.longitude;
-          entity.latitude = remote.latitude;
-          entity.location = remote.location;
-          entity.online = remote.online;
-          entity.lastOnlineAt = remote.lastOnlineAt;
-          entity.dataUpdatedAt = remote.dataUpdatedAt;
-          entity.creAt = remote.createdAt;
+          Object.assign(entity, {
+            name: remote.name,
+            deviceId: deviceId,
+            devId: remote.deviceId,
+            productId: remote.productId,
+            firmwareVersion: remote.firmwareVersion,
+            longitude: remote.longitude,
+            latitude: remote.latitude,
+            location: remote.location,
+            online: remote.online,
+            lastOnlineAt: remote.lastOnlineAt,
+            dataUpdatedAt: remote.dataUpdatedAt,
+            creAt: remote.createdAt,
+          });
 
           entities.push(entity);
 

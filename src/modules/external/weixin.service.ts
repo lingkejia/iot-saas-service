@@ -9,9 +9,10 @@ export class WeixinService {
     private readonly httpService: HttpService,
   ) {}
 
+  // 获取微信openid
   async getOpenId(code: string) {
-    const appid = this.configService.get('weixin.appid');
-    const appsecret = this.configService.get('weixin.secret');
+    const appid = this.configService.get('WEIXIN_APPID');
+    const appsecret = this.configService.get('WEIXIN_SECRET');
     const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${appid}&secret=${appsecret}&js_code=${code}&grant_type=authorization_code`;
     const response = await this.httpService.axiosRef.get(url);
 

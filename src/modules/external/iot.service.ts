@@ -1,18 +1,15 @@
 import { HttpService } from '@nestjs/axios';
-import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class IotService implements OnModuleInit {
+export class IotService {
   constructor(
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
   ) {}
 
-  onModuleInit() {
-    // this.getDevices({});
-  }
-
+  // 获取基础URL
   private getBaseUrl() {
     const url = this.configService.get('IOT_API');
     const key = this.configService.get('IOT_API_KEY');
@@ -26,6 +23,7 @@ export class IotService implements OnModuleInit {
     return url;
   }
 
+  // 获取产品详情
   async getProduct(id: string) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/products/${id}`;
@@ -38,6 +36,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取产品标签
   async getProductTag(id: string) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/products/${id}/tags`;
@@ -50,6 +49,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取产品属性
   async getProductProperty(id: string) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/products/${id}/properties`;
@@ -62,6 +62,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取产品命令
   async getProductCommand(id: string) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/products/${id}/commands`;
@@ -74,6 +75,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取产品事件
   async getProductEvent(id: string) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/products/${id}/events`;
@@ -86,6 +88,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取产品配置
   async getProductConfig(id: string, identifier: string) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/products/${id}/configs`;
@@ -102,6 +105,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取设备列表
   async getDevices(query: any) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/devices`;
@@ -116,6 +120,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取设备详情
   async getDevice(id: string) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/devices/${id}`;
@@ -128,6 +133,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 更新设备
   async updateDevice(id: string, dto: any) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/devices/${id}`;
@@ -140,16 +146,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
-  // async getDeviceStatus(id: string) {
-  //   const baseUrl = this.getBaseUrl();
-  //   const url = `${baseUrl}/devices/${id}/status`;
-  //   const response = await this.httpService.axiosRef.get(url);
-  //   if (response.status !== HttpStatus.OK) {
-  //     throw new Error(response.statusText);
-  //   }
-  //   return response.data;
-  // }
-
+  // 获取设备标签
   async getDeviceTag(id: string) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/devices/${id}/tag`;
@@ -162,6 +159,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取设备属性
   async getDeviceProperty(id: string) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/devices/${id}/property`;
@@ -174,6 +172,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取设备属性历史
   async getDeviceProperties(
     id: string,
     query: {
@@ -197,6 +196,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取设备事件历史
   async getDeviceEvents(
     id: string,
     query: {
@@ -219,6 +219,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取设备命令记录
   async getDeviceCommands(
     id: string,
     query: {
@@ -242,6 +243,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 发送设备命令
   async sendDeviceCommand(id: string, data: any) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/devices/${id}/command`;
@@ -254,6 +256,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取设备配置
   async getDeviceConfig(id: string, identifier: string) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/devices/${id}/config`;
@@ -268,6 +271,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 获取设备配置记录
   async getDeviceConfigs(
     id: string,
     query: {
@@ -291,6 +295,7 @@ export class IotService implements OnModuleInit {
     return response.data;
   }
 
+  // 发送设备配置
   async sendDeviceConfig(id: string, data: any) {
     const baseUrl = this.getBaseUrl();
     const url = `${baseUrl}/devices/${id}/config`;
