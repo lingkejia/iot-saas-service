@@ -28,6 +28,17 @@ export class AuthController {
     return result;
   }
 
+  @Oplogs({ title: '刷新令牌', type: OplogType.Login })
+  @Post('/refresh')
+  async refresh(@Body('refresh_token') refreshToken: string, @Req() req: any) {
+    const result = await this.authService.refreshToken(refreshToken);
+
+    // 为了登录日志
+    req['access_token'] = result.access_token;
+
+    return result;
+  }
+
   @Oplogs({ title: '微信小程序登录', type: OplogType.Login })
   @Post('/wx-login')
   async wxLogin(@Body() dto: any, @Req() req: any) {

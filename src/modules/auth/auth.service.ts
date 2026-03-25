@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { WeixinService } from '../external/weixin.service';
 import { UserService } from '../user/user.service';
@@ -10,6 +11,7 @@ import { UserService } from '../user/user.service';
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly configService: ConfigService,
     private userService: UserService,
     private jwtService: JwtService,
     private weixinService: WeixinService,
@@ -36,9 +38,18 @@ export class AuthService {
 
   // 登录
   async login(user: any) {
-    const payload = { username: user.username, sub: user.id, role: user.role };
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign({
+        username: user.username,
+        sub: user.id,
+        role: user.role,
+      }),
+      refresh_token: this.jwtService.sign(
+        { sub: user.id },
+        {
+          expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN'),
+        },
+      ),
       user: {
         id: user.id,
         username: user.username,
@@ -46,6 +57,38 @@ export class AuthService {
         role: user.role,
       },
     };
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const payload = this.jwtService.verify(refreshToken);
+      const user = await this.userService.findOne(payload.sub);
+      if (!user) {
+        throw new BadRequestException('无效的刷新令牌');
+      }
+
+      return {
+        access_token: this.jwtService.sign({
+          username: user.username,
+          sub: user.id,
+          role: user.role,
+        }),
+        refresh_token: this.jwtService.sign(
+          { sub: user.id },
+          {
+            expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN'),
+          },
+        ),
+        user: {
+          id: user.id,
+          username: user.username,
+          // email: user.email,
+          role: user.role,
+        },
+      };
+    } catch (e) {
+      throw new BadRequestException('令牌刷新失败');
+    }
   }
 
   // 微信小程序登录
@@ -58,9 +101,18 @@ export class AuthService {
 
     const user = await this.userService.findByOpenId(openid);
 
-    const payload = { username: user.username, sub: user.id, role: user.role };
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign({
+        username: user.username,
+        sub: user.id,
+        role: user.role,
+      }),
+      refresh_token: this.jwtService.sign(
+        { sub: user.id },
+        {
+          expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN'),
+        },
+      ),
       user: {
         id: user.id,
         username: user.username,
