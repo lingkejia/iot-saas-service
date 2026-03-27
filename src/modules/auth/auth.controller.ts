@@ -61,6 +61,14 @@ export class AuthController {
     return req.user;
   }
 
+  // 退出登录
+  @Oplogs({ title: '退出登录', type: OplogType.Logout })
+  @Post('/logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@Req() req: any) {
+    return true;
+  }
+
   @Oplogs({ title: '修改密码', type: OplogType.Update })
   @Patch('/change-password')
   @UseGuards(JwtAuthGuard)

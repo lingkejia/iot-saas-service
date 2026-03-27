@@ -149,7 +149,7 @@ export class AuthService {
     const { code } = dto;
     const openid = await this.weixinService.getOpenId(code);
     if (!openid) {
-      throw new UnauthorizedException('微信小程序登录失败，无法获取openid');
+      throw new UnauthorizedException('微信小程序绑定失败，无法获取openid');
     }
 
     return this.userService.update(user.id, { wxOpenId: openid });
