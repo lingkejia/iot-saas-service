@@ -26,8 +26,8 @@ export class DeviceService {
     if (user.role === 'user') {
       // 默认 Empty_UUID 占位
       query.devIds = user.deviceIds?.length
-        ? user.deviceIds
-        : ['00000000-0000-0000-0000-000000000000'];
+        ? user.deviceIds.join(',')
+        : '00000000-0000-0000-0000-000000000000';
     }
 
     // 优化查询性能，不关联告警状态、基站信息
