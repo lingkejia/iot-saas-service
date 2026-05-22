@@ -19,11 +19,11 @@ export class JobService implements OnModuleInit {
 
   onModuleInit() {
     // 立即同步
-    this.syncDevices();
+    // this.syncDevices();
   }
 
   // 同步设备列表，每分钟执行一次
-  @Cron('0 * * * * *')
+  // @Cron('0 * * * * *')
   async syncDevices() {
     try {
       const now = new Date();

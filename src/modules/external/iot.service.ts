@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as qs from 'qs';
 
 @Injectable()
 export class IotService {
@@ -111,6 +112,9 @@ export class IotService {
     const url = `${baseUrl}/devices`;
     const response = await this.httpService.axiosRef.get(url, {
       params: query,
+      // 特殊配置：使数组ids[1,2,3]变成ids=1&ids=2&ids=3
+      paramsSerializer: (params) =>
+        qs.stringify(params, { arrayFormat: 'repeat' }),
     });
 
     if (response.status !== HttpStatus.OK) {

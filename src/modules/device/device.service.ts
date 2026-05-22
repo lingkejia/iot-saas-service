@@ -18,33 +18,51 @@ export class DeviceService {
     return this.deviceRepository.save(entities);
   }
 
-  async findAll(query: any, user: any): Promise<Device[]> {
-    const where = {
-      name: query.name ? Like(`%${query.name}%`) : null,
-      devId: query.devId ? Like(`%${query.devId}%`) : null,
-      online: query.online,
-      deviceId: null,
-    };
+  async findAll(query: any, user: any) {
+    // 基础设置
+    query.page = query.page ?? 1;
+    query.pageSize = query.pageSize ?? 500;
 
     if (user.role === 'user') {
-      // 防止用户没有绑定设备时，查询到所有设备
-      const _deviceIds = user.deviceIds ?? [];
-      where.deviceId = In(_deviceIds);
+      // 默认 Empty_UUID 占位
+      query.devIds = user.deviceIds?.length
+        ? user.deviceIds
+        : ['00000000-0000-0000-0000-000000000000'];
     }
+
+    // 优化查询性能，不关联告警状态、基站信息
+    query.relationAlarm = false;
+    query.relationCell = false;
+
+    const response = await this.iotService.getDevices(query);
+    return response.data;
+
+    // const where = {
+    //   name: query.name ? Like(`%${query.name}%`) : null,
+    //   devId: query.devId ? Like(`%${query.devId}%`) : null,
+    //   online: query.online,
+    //   deviceId: null,
+    // };
+
+    // if (user.role === 'user') {
+    // 防止用户没有绑定设备时，查询到所有设备
+    // const _deviceIds = user.deviceIds ?? [];
+    // where.deviceId = In(_deviceIds);
+    // }
 
     // const page = query.page ?? 1;
     // const pageSize = query.pageSize ?? 10;
 
-    const items = await this.deviceRepository.find({
-      where,
-      order: {
-        creAt: 'DESC',
-      },
-      // skip: (page - 1) * pageSize,
-      // take: pageSize,
-    });
+    // const items = await this.deviceRepository.find({
+    // where,
+    // order: {
+    //   creAt: 'DESC',
+    // },
+    // skip: (page - 1) * pageSize,
+    // take: pageSize,
+    // });
 
-    return items;
+    // return items;
   }
 
   async findOne(deviceId: string, user: any) {
