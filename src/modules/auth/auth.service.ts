@@ -38,6 +38,7 @@ export class AuthService {
 
   // 登录
   async login(user: any) {
+    await this.updateLoginTime(user);
     return {
       access_token: this.jwtService.sign({
         username: user.username,
@@ -59,6 +60,7 @@ export class AuthService {
     };
   }
 
+  // 刷新令牌
   async refreshToken(refreshToken: string) {
     try {
       const payload = this.jwtService.verify(refreshToken);
@@ -66,6 +68,8 @@ export class AuthService {
       if (!user) {
         throw new BadRequestException('无效的刷新令牌');
       }
+
+      await this.updateLoginTime(user);
 
       return {
         access_token: this.jwtService.sign({
@@ -101,6 +105,8 @@ export class AuthService {
 
     const user = await this.userService.findByOpenId(openid);
 
+    await this.updateLoginTime(user);
+
     return {
       access_token: this.jwtService.sign({
         username: user.username,
@@ -121,6 +127,11 @@ export class AuthService {
         // wxOpenId: user.wxOpenId,
       },
     };
+  }
+
+  // 更新登录时间
+  async updateLoginTime(user: any) {
+    return this.userService.update(user.id, { loginAt: new Date() });
   }
 
   // async register(userData: Partial<User>) {
