@@ -80,7 +80,7 @@ export class UserService {
     });
 
     if (!model) {
-      throw new NotFoundException(`wxOpenID[${wxOpenId}]不存在`);
+      throw new NotFoundException('该微信账号尚未绑定系统账号');
     }
 
     return model;

@@ -100,7 +100,7 @@ export class AuthService {
     const { code } = dto;
     const openid = await this.weixinService.getOpenId(code);
     if (!openid) {
-      throw new UnauthorizedException('微信小程序登录失败，无法获取openid');
+      throw new UnauthorizedException('微信登录验证失败，请稍后重试');
     }
 
     const user = await this.userService.findByOpenId(openid);
@@ -130,7 +130,7 @@ export class AuthService {
   }
 
   // 更新登录时间
-  async updateLoginTime(user: any) {
+  private async updateLoginTime(user: any) {
     return this.userService.update(user.id, { loginAt: new Date() });
   }
 
